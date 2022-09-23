@@ -1,0 +1,13 @@
+Package: LogLikelihood
+Type: Package
+Title: Find word distinctiveness in groups of text
+Version: 1.0
+Date: 2022-09-13
+Author: Ryan Schaefer
+Maintainer: Ryan Schaefer <rdschaefer@smu.edu>
+Description: This packages contains a function (log_likelihood) that will calculate word distinctiveness using the log likelihood algorithm. You input a data frame with columns for the word, the text group, and the number of times that word appears in that group. The column names are set to "word", "group", and "n" by default but they can be changed using the parameters word, group, and n. If any of these columns are not found, the function will not work. The output will be a new data frame with a column called "word" containing all unique words and subsequent columns for all unique groups with the name of that group. The data frame will contain the log likelihood scores for each word in each group. The larger a log likelihood score is, the more distinctive that word is to that group.
+License: GPL (>= 2)
+Encoding: UTF-8
+Imports: Rcpp (>= 1.0.9)
+LinkingTo: Rcpp
+RoxygenNote: 7.2.1

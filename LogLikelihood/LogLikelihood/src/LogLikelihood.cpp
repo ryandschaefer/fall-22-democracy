@@ -140,6 +140,30 @@ void getGroupsWords() {
 // Input a data frame with columns for word, group, and n (word count in group)
 // Outputs a data frame with a column for all unique words
 // Subsequent columns contain LL scores for a given word for all unique groups
+//' Log Likelihood
+//' @description Calculates word distinctiveness using the log likelihood algorithm. You input a data frame with columns for the word, the text group, and the number of times that word appears in that group. The column names are set to "word", "group", and "n" by default but they can be changed using the parameters word, group, and n. If any of these columns are not found, the function will not work. The output will be a new data frame with a column called "word" containing all unique words and subsequent columns for all unique groups with the name of that group. The data frame will contain the log likelihood scores for each word in each group. The larger a log likelihood score is, the more distinctive that word is to that group.
+//' @param t Data frame containing data
+//' @param group Name of data frame column containing text group
+//' @param word Name of data frame column containing words
+//' @param n Name of data frame column containing word count in text group
+//' @return Data frame containing a column containing unique words and columns for log likelihood scores for each group
+//' @examples
+//' # Load example Jane Austen dataset
+//' require(dplyr)
+//' require(janeaustenr)
+//' require(tidytext)
+//' data = austen_books() %>%
+//'     unnest_tokens(word, text) %>%
+//'     count(book, word, sort = TRUE)
+//' # View example dataset
+//' head(data)
+//' 
+//' # Compute log likelihood
+//' output = log_likelihood(data, group = "book")
+//' head(output)
+//' @useDynLib LogLikelihood
+//' @importFrom Rcpp evalCpp
+//' @exportPattern ^[[:alpha:]]+
 // [[Rcpp::export]]
 DataFrame log_likelihood(DataFrame t, String group = "group", String word = "word", String n = "n") {
     // Assign value to text private variable
