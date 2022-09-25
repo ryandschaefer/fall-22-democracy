@@ -25,6 +25,7 @@
 #' @useDynLib LogLikelihood
 #' @importFrom Rcpp evalCpp
 #' @exportPattern ^[[:alpha:]]+
+#' @export
 log_likelihood <- function(t, group = "group", word = "word", n = "n") {
     .Call('_LogLikelihood_log_likelihood', PACKAGE = 'LogLikelihood', t, group, word, n)
 }
