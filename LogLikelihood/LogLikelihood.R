@@ -8,6 +8,7 @@ library(tidytext)
 data = austen_books() %>%
   unnest_tokens(word, text) %>%
   count(book, word, sort = TRUE)
+head(data)
 
 # Create C++ function with rcpp
 sourceCpp("./LogLikelihood.cpp")
@@ -22,5 +23,5 @@ colnames(data) = c("group", "word", "n")
 ll_scores = log_likelihood(data)
 ll_scores
 
-Rcpp.package.skeleton("LogLikelihood", cpp_files = c("LogLikelihood.cpp"), example_code = FALSE)
+# Rcpp.package.skeleton("LogLikelihood", cpp_files = c("LogLikelihood.cpp"), example_code = FALSE)
 

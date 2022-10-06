@@ -8,6 +8,7 @@ library(tidytext)
 data = austen_books() %>%
   unnest_tokens(word, text) %>%
   count(book, word, sort = TRUE)
+head(data)
 
 # Create C++ function with rcpp
 setwd("~/Documents/SMU/DigitalHistoryInternship/fall-22-democracy/JSD")
@@ -17,5 +18,5 @@ sourceCpp("./JSD.cpp")
 jsd = JSD(data, group = "book", g1 = "Pride & Prejudice", g2 = "Emma")
 jsd
 
-Rcpp.package.skeleton("LogLikelihood", cpp_files = c("LogLikelihood.cpp"), example_code = FALSE)
+# Rcpp.package.skeleton("JSD", cpp_files = c("JSD".cpp), example_code = FALSE)
 
