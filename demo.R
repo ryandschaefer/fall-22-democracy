@@ -9,9 +9,12 @@ data = austen_books() %>%
   unnest_tokens(word, text) %>%
   count(book, word, sort = TRUE)
 head(data)
+# Export demo dataset
+setwd("~/Documents/SMU/DigitalHistoryInternship/fall-22-democracy")
+write.csv(data, "./austen.csv", row.names = FALSE)
 
 # Run log likelihood
-setwd("~/Documents/SMU/DigitalHistoryInternship/fall-22-democracy/LogLikelihood")
+setwd("./LogLikelihood")
 install.packages("LogLikelihood_1.0.tar.gz", type = "source", repos = NULL)
 library(LogLikelihood)
 ll = log_likelihood(data, group = "book")
