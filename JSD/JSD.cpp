@@ -5,10 +5,12 @@ using namespace std;
 
 // Variables
 // Input dataframe
-DataFrame text;
+DataFrame Text;
 // Wanted group names
-String group1;
-String group2;
+String Group1;
+String Group2;
+// List of words to calculate JSD for
+CharacterVector WordList;
 // String variables with input column names
 String Group;
 String Word;
@@ -35,24 +37,32 @@ void getJSD();
 
 // Exported function
 // [[Rcpp::export]]
-DataFrame JSD(DataFrame t, String g1 = "", String g2 = "", String group = "group", String word = "word", String n = "n") {
+DataFrame jsd(DataFrame text, String group1 = "", String group2 = "", CharacterVector word_list = CharacterVector::create(), String group = "group", String word = "word", String n = "n") {
   // Set private variables to input values
-  group1 = g1;
-  group2 = g2;
-  text = t;
+  Group1 = group1;
+  Group2 = group2;
+  Text = text;
   Group = group;
   Word = word;
   Count = n;
+  if (word_list.size() == 0) {
+    // If word_list is empty, use all words
+    CharacterVector allWords = text[Word];
+    WordList = unique(allWords);
+  } else {
+    // Else, use given words
+    WordList = word_list;
+  }
   
   // Get unique groups
-  CharacterVector groups = text[Group];
+  CharacterVector groups = Text[Group];
   groups = unique(groups);
   // Set groups 1 & 2 if not given by user
-  if (group1 == "") {
-    group1 = groups[0];
+  if (Group1 == "") {
+    Group1 = groups[0];
   }
-  if (group2 == "") {
-    group2 = groups[1];
+  if (Group2 == "") {
+    Group2 = groups[1];
   }
   
   getProbabilites();
@@ -99,32 +109,40 @@ void getProbabilites() {
   int count2 = 0;
   
   // Get vectors for group, word, and count
-  CharacterVector allGroups = text[Group];
-  CharacterVector allWords = text[Word];
-  NumericVector allCounts = text[Count];
+  CharacterVector allGroups = Text[Group];
+  CharacterVector allWords = Text[Word];
+  NumericVector allCounts = Text[Count];
   
-  // Loop through text dataframe
-  for (int i = 0; i < text.nrows(); i++) {
-    // Check if row group is either group1 or group2
-    if (allGroups[i] == group1) {
-      // Increment total group count
+  // Loop through Text dataframe
+  for (int i = 0; i < Text.nrows(); i++) {
+    // Only include word in WordList
+    if (find(WordList.begin(), WordList.end(), allWords[i]) != WordList.end()) {
+      // Check if row group is either Group1 or Group2
+      if (allGroups[i] == Group1) {
+        if (wordProbs.find(allWords[i]) == wordProbs.end()) {
+          // Create new value in map if word not there yet
+          pair<double, double> temp;
+          wordProbs[allWords[i]] = temp;
+        }
+        // Set word count in group
+        wordProbs[allWords[i]].first = allCounts[i];
+      } else if (allGroups[i] == Group2) {
+        if (wordProbs.find(allWords[i]) == wordProbs.end()) {
+          // Create new value in map if word not there yet
+          pair<double, double> temp;
+          wordProbs[allWords[i]] = temp;
+        }
+        // Set word count in group
+        wordProbs[allWords[i]].second = allCounts[i];
+      }
+    }
+    // Update group counts
+    if (allGroups[i] == Group1) {
+      // Update group 1 count
       count1 += allCounts[i];
-      // Set word count in group
-      if (wordProbs.find(allWords[i]) == wordProbs.end()) {
-        // Create new value in map if word not there yet
-        pair<double, double> temp;
-        wordProbs[allWords[i]] = temp;
-      }
-      wordProbs[allWords[i]].first = allCounts[i];
-    } else if (allGroups[i] == group2) {
+    } else if (allGroups[i] == Group2) {
+      // Update group 2 count
       count2 += allCounts[i];
-      // Set word count in group
-      if (wordProbs.find(allWords[i]) == wordProbs.end()) {
-        // Create new value in map if word not there yet
-        pair<double, double> temp;
-        wordProbs[allWords[i]] = temp;
-      }
-      wordProbs[allWords[i]].second = allCounts[i];
     }
   }
   

@@ -20,13 +20,14 @@ library(LogLikelihood)
 ll = log_likelihood(data, group = "book")
 ll
 library(ggplot2)
-ggplot(ll, aes(x = Emma, y = Persuasion, label = word)) +
+ggplot(ll, aes(x = log(Emma), y = log(Persuasion), label = word)) +
   geom_point() +
   geom_text(hjust=0, vjust=0)
+setwd("../")
 
 # Run JSD
-setwd("../JSD")
+setwd("./JSD")
 sourceCpp("./JSD.cpp")
-jsd = JSD(data, group = "book", g1 = "Pride & Prejudice", g2 = "Emma")
-jsd
+jsd_out = jsd(data, group = "book", word_list = c("age"))
+jsd_out
 
