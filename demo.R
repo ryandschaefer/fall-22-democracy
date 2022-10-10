@@ -28,6 +28,15 @@ setwd("../")
 # Run JSD
 setwd("./JSD")
 sourceCpp("./JSD.cpp")
-jsd_out = jsd(data, group = "book", word_list = c("age"))
+# Default
+jsd_out = jsd(data, group = "book")
 jsd_out
-
+# Provide word list
+jsd_out = jsd(data, group = "book", word_list = c("person", "age"))
+jsd_out
+# Provide group list
+jsd_out = jsd(data, group = "book", group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"))
+jsd_out
+# Provide word and group lists
+jsd_out = jsd(data, group = "book", group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"), word_list = c("person", "age"))
+jsd_out

@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <map>
+#include <cstring>
 using namespace Rcpp;
 using namespace std;
 
@@ -33,14 +34,17 @@ double H(double);
 void getProbabilites();
 // Calculate JSD
 void getJSD();
-
+// Get JSD of one group pairing
+void jsd_pair();
+// Initialize wordProbs
+void setWordProbs();
+// Clear private variables
+void clearVars();
 
 // Exported function
 // [[Rcpp::export]]
-DataFrame jsd(DataFrame text, String group1 = "", String group2 = "", CharacterVector word_list = CharacterVector::create(), String group = "group", String word = "word", String n = "n") {
+DataFrame jsd(DataFrame text, CharacterVector group_list = CharacterVector::create(), CharacterVector word_list = CharacterVector::create(), String group = "group", String word = "word", String n = "n") {
   // Set private variables to input values
-  Group1 = group1;
-  Group2 = group2;
   Text = text;
   Group = group;
   Word = word;
@@ -54,21 +58,64 @@ DataFrame jsd(DataFrame text, String group1 = "", String group2 = "", CharacterV
     WordList = word_list;
   }
   
-  // Get unique groups
-  CharacterVector groups = Text[Group];
-  groups = unique(groups);
-  // Set groups 1 & 2 if not given by user
-  if (Group1 == "") {
-    Group1 = groups[0];
-  }
-  if (Group2 == "") {
-    Group2 = groups[1];
+  // Initialize wordProbs
+  setWordProbs();
+  
+  // If not enough groups given, pick for user
+  if (group_list.size() < 2) {
+    // Get all unique groups
+    CharacterVector allGroups = Text[Group];
+    allGroups = unique(allGroups);
+    if (group_list.size() == 1) {
+      // If 1 group was given, set Group1 to given group
+      Group1 = group_list[0];
+      if (allGroups[0] == Group1) {
+        // If first group is Group1, set Group2 to second group
+        Group2 = allGroups[1];
+      } else {
+        // Else, set Group2 to first group
+        Group2 = allGroups[0];
+      }
+    } else {
+      // Else, use first two groups
+      Group1 = allGroups[0];
+      Group2 = allGroups[1];
+    }
+    // Return results of JSD for selected pair
+    jsd_pair();
+    
+    // Clear private variables
+    clearVars();
+    
+    return results;
   }
   
-  getProbabilites();
-  getJSD();
+  // Initialze output data frame
+  DataFrame output = DataFrame::create();
+  // Loop through given groups
+  for (int i = 0; i < group_list.size(); i++) {
+    // Loop through groups after current group
+    for (int j = i + 1; j < group_list.size(); j++) {
+      String g1 = group_list[i];
+      String g2 = group_list[j];
+      /// Set groups 1 and 2 to current groups
+      Group1 = group_list[i];
+      Group2 = group_list[j];
+      // Calculate JSD scores for current group pairing
+      jsd_pair();
+      // Store JSD scores
+      CharacterVector names = results.names();
+      String name = names[1];
+      output.push_back(results[1], name.get_cstring());
+    }
+  }
+  // Add word column to output
+  output.push_front(results["word"], "word");
   
-  return results;
+  // Clear private variables
+  clearVars();
+  
+  return output;
 }
 
 // Jensen-Shannon Divergence
@@ -119,19 +166,9 @@ void getProbabilites() {
     if (find(WordList.begin(), WordList.end(), allWords[i]) != WordList.end()) {
       // Check if row group is either Group1 or Group2
       if (allGroups[i] == Group1) {
-        if (wordProbs.find(allWords[i]) == wordProbs.end()) {
-          // Create new value in map if word not there yet
-          pair<double, double> temp;
-          wordProbs[allWords[i]] = temp;
-        }
         // Set word count in group
         wordProbs[allWords[i]].first = allCounts[i];
       } else if (allGroups[i] == Group2) {
-        if (wordProbs.find(allWords[i]) == wordProbs.end()) {
-          // Create new value in map if word not there yet
-          pair<double, double> temp;
-          wordProbs[allWords[i]] = temp;
-        }
         // Set word count in group
         wordProbs[allWords[i]].second = allCounts[i];
       }
@@ -169,6 +206,45 @@ void getJSD() {
     scores.push_back(jsd);
   }
   
+  // Use concatenated group names as column name
+  char* temp = new char[strlen(Group1.get_cstring()) + strlen(Group2.get_cstring()) + 1];
+  strcpy(temp, Group1.get_cstring());
+  strcat(temp, "_");
+  strcat(temp, Group2.get_cstring());
+  string name = temp;
+  delete[] temp;
+  
   // Create results dataframe from vectors
-  results = DataFrame::create(Named(Word) = words, Named("JSD") = scores);
+  results = DataFrame::create(Named(Word) = words, Named(name) = scores);
+}
+
+// Calculate the JSD score for a group pairing
+void jsd_pair() {
+  // Calculate word probabilities
+  getProbabilites();
+  // Calculate word JSD scores
+  getJSD();
+}
+
+// Initialize wordProbs
+void setWordProbs() {
+  // Loop through WordList
+  for (int i = 0; i < WordList.size(); i++) {
+    // Add pair to wordProbs for current word
+    pair<double, double> temp;
+    wordProbs[WordList[i]] = temp;
+  }
+}
+
+// Clear private variables
+void clearVars() {
+  Text = DataFrame::create();
+  String Group1 = "";
+  String Group2 = "";
+  CharacterVector WordList = CharacterVector::create();
+  Group = "";
+  Word = "";
+  Count = "";
+  wordProbs.clear();
+  DataFrame results = DataFrame::create();
 }
