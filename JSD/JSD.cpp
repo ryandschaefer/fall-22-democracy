@@ -264,13 +264,13 @@ void jsdPair() {
   
   // Loop through wordProbs
   for (const auto& itr : wordProbs) {
-    if (itr.second.first != 0 && itr.second.second != 0) {
+    // if (itr.second.first != 0 && itr.second.second != 0) {
       // If both probabilities are nonzero, get JSD of current word
       double jsd = calcJSD(itr.second.first, itr.second.second);
       // Append word and jsd to vectors
       words.push_back(itr.first);
       scores.push_back(jsd);
-    }
+    // }
   }
   
   // Use concatenated group names as column name
