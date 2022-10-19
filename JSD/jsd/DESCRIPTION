@@ -1,0 +1,13 @@
+Package: jsd
+Type: Package
+Title: Find JSD between groups of text
+Version: 1.0
+Date: 2022-10-19
+Author: Ryan Schaefer
+Maintainer: Ryan Schaefer <rdschaefer@smu.edu>
+Description: This package contains a function (JSD) that will calculate the JSD score for each word between group pairings. To use this function, the user must provide a data frame with a column for words, a column for the text group, and a column for the count of the word in that group. The default column names are "word", "group", and "n", but these can be changed using the parameters word, group, and n. The default settings will calculate the JSD for all words between the first two groups in the data set. However, the user can provide a list of words using the word_list parameter and/or a list of groups using the group_list parameter. If more than two groups are given, the function will provide the JSD scores all all pairs of groups.
+License: GPL (>= 2)
+Encoding: UTF-8
+Imports: Rcpp (>= 1.0.9)
+LinkingTo: Rcpp
+RoxygenNote: 7.2.1
