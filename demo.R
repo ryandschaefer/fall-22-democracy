@@ -40,6 +40,3 @@ jsd_out
 # Provide word and group lists
 jsd_out = jsd(data, group = "book", group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"), word_list = c("person", "age"))
 jsd_out
-# Cumulative
-jsd_out = jsd(data, group = "book", cumulative = TRUE)
-jsd_out

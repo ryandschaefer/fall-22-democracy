@@ -26,19 +26,14 @@ DataFrame results;
 double calcJSD(double, double);
 // Kullback-Leibler Divergence
 double kld(double, double);
-double KLD(vector<double>&, vector<double>&);
 // Joint Entropy
 double h(double, double);
-double H(vector<double>&, vector<double>&);
 // Entropy
 double h(double);
-double H(vector<double>&);
 // Calculate word probabilites
 void getProbabilites();
 // Get JSD of one group pairing
 void jsdPair();
-// Get cumulative JSD of one group pairing
-void jsdPairCumulative();
 // Initialize wordProbs
 void setWordProbs();
 // Clear private variables
@@ -46,7 +41,7 @@ void clearVars();
 
 // Exported function
 // [[Rcpp::export]]
-DataFrame jsd(DataFrame text, bool cumulative = false, CharacterVector group_list = CharacterVector::create(), CharacterVector word_list = CharacterVector::create(), String group = "group", String word = "word", String n = "n") {
+DataFrame jsd(DataFrame text, CharacterVector group_list = CharacterVector::create(), CharacterVector word_list = CharacterVector::create(), String group = "group", String word = "word", String n = "n") {
   // Set private variables to input values
   Text = text;
   Group = group;
@@ -85,14 +80,8 @@ DataFrame jsd(DataFrame text, bool cumulative = false, CharacterVector group_lis
       Group2 = allGroups[1];
     }
     
-    if (cumulative) {
-      // If cumulative, return results of cumulative JSD for selected pair
-      jsdPairCumulative();
-    } else {
-      // Else, return results of JSD for selected pair
-      jsdPair();
-    }
-    
+    // Return results of JSD for selected pair
+    jsdPair();
     // Clear private variables
     clearVars();
     
@@ -111,30 +100,17 @@ DataFrame jsd(DataFrame text, bool cumulative = false, CharacterVector group_lis
       /// Set groups 1 and 2 to current groups
       Group1 = group_list[i];
       Group2 = group_list[j];
-      if (cumulative) {
-        // If cumulative, calculate cumulative JSD score for group pairing
-        // Calculate JSD scores for current group pairing
-        jsdPairCumulative();
-        // Store JSD scores
-        CharacterVector names = results.names();
-        String name = names[0];
-        output.push_back(results[0], name.get_cstring());
-      } else {
-        // Else, calculate JSD scores for group pairing
-        // Calculate JSD scores for current group pairing
-        jsdPair();
-        // Store JSD scores
-        CharacterVector names = results.names();
-        String name = names[1];
-        output.push_back(results[1], name.get_cstring());
-      }
+      // Calculate JSD scores for group pairing
+      jsdPair();
+      // Store JSD scores
+      CharacterVector names = results.names();
+      String name = names[1];
+      output.push_back(results[1], name.get_cstring());
       
     }
   }
-  if (!cumulative) {
-    // If not cumulative, add word column to output
-    output.push_front(results["word"], "word");
-  }
+  // Add word column to output
+  output.push_front(results["word"], "word");
   
   // Clear private variables
   clearVars();
@@ -161,13 +137,6 @@ double kld(double p, double q) {
    return val;
 }
 
-// Kullback-Leibler Divergence
-double KLD(vector<double>& P, vector<double>& Q) {
-  // Return joint entropy - entropy(P)
-  double val = H(P, Q) - H(P);
-  return val;
-}
-
 // Joint Entropy
 double h(double x, double y) {
   // Return joint probability * log(joint robability)
@@ -175,40 +144,10 @@ double h(double x, double y) {
   return jointProb * log(jointProb);
 }
 
-// Joint Entropy
-double H(vector<double>& X, vector<double>& Y) {
-  double sum = 0;
-  // Loop through distributions
-  for (const auto& x : X) {
-    for (const auto& y : Y) {
-      // Calculate joint probability
-      double jointProb = x * y;
-      // Add product of joint probability and log(joint probability) to sum
-      sum += jointProb * log(jointProb);
-    }
-  }
-  // Make sum negative and return it
-  sum *= -1;
-  return sum;
-}
-
 // Entropy
 double h(double x) {
   // Return probability * log(probability)
   return x * log(x);
-}
-
-// Entropy
-double H(vector<double>& X) {
-  double sum = 0;
-  // Loop through distribution
-  for (const auto& x : X) {
-    // Add product of probability and log(probability) to sum
-    sum += x * log(x);
-  }
-  // Make sum negative and return
-  sum *= -1;
-  return sum;
 }
 
 // Calculate word probabilites
@@ -283,46 +222,6 @@ void jsdPair() {
   
   // Create results dataframe from vectors
   results = DataFrame::create(Named(Word) = words, Named(name) = scores);
-}
-
-// Get cumulative JSD of one group pairing
-void jsdPairCumulative() {
-  // Calculate word probabilities
-  getProbabilites();
-
-  // Vectors to hold probability distributions
-  vector<double> P;
-  vector<double> Q;
-  vector<double> R;
-
-  // Loop through word probabilities
-  for (const auto& itr : wordProbs) {
-    if (itr.second.first != 0 && itr.second.second != 0) {
-      // If both probabilites are not 0, add probabilities to distributions
-      P.push_back(itr.second.first);
-      Q.push_back(itr.second.second);
-      // Find midpoint
-      double mid = 0.5 * (itr.second.first + itr.second.second);
-      R.push_back(mid);
-    }
-  }
-
-  // Calculate JSD
-  double jsd = (KLD(P, R) + KLD(Q, R)) / 2;
-
-  // Create NumericVector and add jsd
-  NumericVector col = NumericVector::create(jsd);
-
-  // Use concatenated group names as column name
-  char* temp = new char[strlen(Group1.get_cstring()) + strlen(Group2.get_cstring()) + 1];
-  strcpy(temp, Group1.get_cstring());
-  strcat(temp, "_");
-  strcat(temp, Group2.get_cstring());
-  string name = temp;
-  delete[] temp;
-
-  // Create results data frame from col
-  results = DataFrame::create(Named(name) = col);
 }
 
 // Initialize wordProbs
