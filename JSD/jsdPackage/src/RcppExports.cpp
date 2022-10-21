@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // jsd
 DataFrame jsd(DataFrame text, CharacterVector group_list, CharacterVector word_list, String group, String word, String n);
-RcppExport SEXP _jsd_jsd(SEXP textSEXP, SEXP group_listSEXP, SEXP word_listSEXP, SEXP groupSEXP, SEXP wordSEXP, SEXP nSEXP) {
+RcppExport SEXP _jsdPackage_jsd(SEXP textSEXP, SEXP group_listSEXP, SEXP word_listSEXP, SEXP groupSEXP, SEXP wordSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -28,11 +28,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_jsd_jsd", (DL_FUNC) &_jsd_jsd, 6},
+    {"_jsdPackage_jsd", (DL_FUNC) &_jsdPackage_jsd, 6},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_jsd(DllInfo *dll) {
+RcppExport void R_init_jsdPackage(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

@@ -40,6 +40,37 @@ void setWordProbs();
 void clearVars();
 
 // Exported function
+//' JSD
+//' @description Calculates the JSD score for each word between group pairings. To use this function, the user must provide a data frame with a column for words, a column for the text group, and a column for the count of the word in that group. The default column names are "word", "group", and "n", but these can be changed using the parameters word, group, and n. The default settings will calculate the JSD for all words between the first two groups in the data set. However, the user can provide a list of words using the word_list parameter and/or a list of groups using the group_list parameter. If more than two groups are given, the function will provide the JSD scores all all pairs of groups.
+//' @param text Data frame containing data
+//' @param group_list Vector containing all groups to find pairwise JSD scores for
+//' @param word_list Vector containing all words to find JSD scores for
+//' @param group Name of data frame column containing text group
+//' @param word Name of data frame column containing words
+//' @param n Name of data frame column containing word count in text group
+//' @return Data frame containing a column containing unique words and columns for JSD scores for each group pair
+//' @examples
+//' # Load example Jane Austen dataset
+//' require(dplyr)
+//' require(janeaustenr)
+//' require(tidytext)
+//' data = austen_books() %>%
+//'     unnest_tokens(word, text) %>%
+//'     count(book, word, sort = TRUE)
+//' # View example dataset
+//' head(data)
+//' 
+//' # Calculate JSD for given words and groups
+//' output = jsd(
+//'   data, 
+//'   group = "book", 
+//'   group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"), 
+//'   word_list = c("person", "age")
+//' )
+//' head(output)
+//' @useDynLib LogLikelihood
+//' @importFrom Rcpp evalCpp
+//' @exportPattern ^[[:alpha:]]+
 // [[Rcpp::export]]
 DataFrame jsd(DataFrame text, CharacterVector group_list = CharacterVector::create(), CharacterVector word_list = CharacterVector::create(), String group = "group", String word = "word", String n = "n") {
   // Set private variables to input values

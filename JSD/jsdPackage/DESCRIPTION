@@ -1,4 +1,4 @@
-Package: jsd
+Package: jsdPackage
 Type: Package
 Title: Find JSD between groups of text
 Version: 1.0

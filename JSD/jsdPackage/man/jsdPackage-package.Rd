@@ -1,6 +1,6 @@
-\name{jsd-package}
-\alias{jsd-package}
-\alias{jsd}
+\name{jsdPackage-package}
+\alias{jsdPackage-package}
+\alias{jsdPackage}
 \docType{package}
 \title{
   A short title line describing what the package does
