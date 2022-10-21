@@ -17,3 +17,10 @@ print(data.head())
 # Run log likelihood
 ll = LogLikelihood.log_likelihood(data, group = "book")
 print(ll.head())
+
+# Load JSD package
+JSD = importr("jsdPackage")
+
+# Run JSD
+jsd = JSD.jsd(data, group = "book")
+print(jsd.head())
