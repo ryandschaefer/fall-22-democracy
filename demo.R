@@ -10,7 +10,6 @@ data = austen_books() %>%
   count(book, word, sort = TRUE)
 head(data)
 # Export demo dataset
-setwd("~/Documents/SMU/DigitalHistoryInternship/fall-22-democracy")
 write.csv(data, "./austen.csv", row.names = FALSE)
 
 # Run log likelihood
