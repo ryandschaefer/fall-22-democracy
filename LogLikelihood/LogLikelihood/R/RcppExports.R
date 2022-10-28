@@ -3,7 +3,9 @@
 
 #' Log Likelihood
 #' @description Calculates word distinctiveness using the log likelihood algorithm. You input a data frame with columns for the word, the text group, and the number of times that word appears in that group. The column names are set to "word", "group", and "n" by default but they can be changed using the parameters word, group, and n. If any of these columns are not found, the function will not work. The output will be a new data frame with a column called "word" containing all unique words and subsequent columns for all unique groups with the name of that group. The data frame will contain the log likelihood scores for each word in each group. The larger a log likelihood score is, the more distinctive that word is to that group.
-#' @param t Data frame containing data
+#' @param text Data frame containing data
+#' @param group_list Vector containing all groups to find log likelihood scores for
+#' @param word_list Vector containing all words to find log likelihood scores for
 #' @param group Name of data frame column containing text group
 #' @param word Name of data frame column containing words
 #' @param n Name of data frame column containing word count in text group
@@ -20,13 +22,17 @@
 #' head(data)
 #' 
 #' # Compute log likelihood
-#' output = log_likelihood(data, group = "book")
+#' output = log_likelihood(
+#'   data, 
+#'   group = "book", 
+#'   group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"), 
+#'   word_list = c("person", "age")
+#' )
 #' head(output)
 #' @useDynLib LogLikelihood
 #' @importFrom Rcpp evalCpp
 #' @exportPattern ^[[:alpha:]]+
-#' @export
-log_likelihood <- function(t, group = "group", word = "word", n = "n") {
-    .Call('_LogLikelihood_log_likelihood', PACKAGE = 'LogLikelihood', t, group, word, n)
+log_likelihood <- function(text, group_list = as.character( c()), word_list = as.character( c()), group = "group", word = "word", n = "n") {
+    .Call('_LogLikelihood_log_likelihood', PACKAGE = 'LogLikelihood', text, group_list, word_list, group, word, n)
 }
 

@@ -4,10 +4,21 @@
 \alias{log_likelihood}
 \title{Log Likelihood}
 \usage{
-log_likelihood(t, group = "group", word = "word", n = "n")
+log_likelihood(
+  text,
+  group_list = as.character(c()),
+  word_list = as.character(c()),
+  group = "group",
+  word = "word",
+  n = "n"
+)
 }
 \arguments{
-\item{t}{Data frame containing data}
+\item{text}{Data frame containing data}
+
+\item{group_list}{Vector containing all groups to find log likelihood scores for}
+
+\item{word_list}{Vector containing all words to find log likelihood scores for}
 
 \item{group}{Name of data frame column containing text group}
 
@@ -33,6 +44,11 @@ data = austen_books() \%>\%
 head(data)
 
 # Compute log likelihood
-output = log_likelihood(data, group = "book")
+output = log_likelihood(
+  data, 
+  group = "book", 
+  group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"), 
+  word_list = c("person", "age")
+)
 head(output)
 }

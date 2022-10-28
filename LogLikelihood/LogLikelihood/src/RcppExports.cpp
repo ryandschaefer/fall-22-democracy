@@ -11,22 +11,24 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // log_likelihood
-DataFrame log_likelihood(DataFrame t, String group, String word, String n);
-RcppExport SEXP _LogLikelihood_log_likelihood(SEXP tSEXP, SEXP groupSEXP, SEXP wordSEXP, SEXP nSEXP) {
+DataFrame log_likelihood(DataFrame text, CharacterVector group_list, CharacterVector word_list, String group, String word, String n);
+RcppExport SEXP _LogLikelihood_log_likelihood(SEXP textSEXP, SEXP group_listSEXP, SEXP word_listSEXP, SEXP groupSEXP, SEXP wordSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type t(tSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type text(textSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type group_list(group_listSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type word_list(word_listSEXP);
     Rcpp::traits::input_parameter< String >::type group(groupSEXP);
     Rcpp::traits::input_parameter< String >::type word(wordSEXP);
     Rcpp::traits::input_parameter< String >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(log_likelihood(t, group, word, n));
+    rcpp_result_gen = Rcpp::wrap(log_likelihood(text, group_list, word_list, group, word, n));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_LogLikelihood_log_likelihood", (DL_FUNC) &_LogLikelihood_log_likelihood, 4},
+    {"_LogLikelihood_log_likelihood", (DL_FUNC) &_LogLikelihood_log_likelihood, 6},
     {NULL, NULL, 0}
 };
 
