@@ -23,7 +23,6 @@ library(ggplot2)
 ggplot(ll, aes(x = log(Emma), y = log(Persuasion), label = word)) +
   geom_point() +
   geom_text(hjust=0, vjust=0)
-setwd("../")
 # Provide word list
 ll = log_likelihood(data, group = "book", word_list = c("person", "age"))
 ll
@@ -33,6 +32,7 @@ ll
 # Provide word and group lists
 ll = log_likelihood(data, group = "book", group_list = c("Mansfield Park", "Emma", "Pride & Prejudice"), word_list = c("person", "age"))
 ll
+setwd("../")
 
 # Run JSD
 setwd("./JSD")
