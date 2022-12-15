@@ -28,19 +28,22 @@ install.packages("LogLikelihood_1.0.tar.gz", type = "source", repos = NULL)
 library(LogLikelihood)
 
 # Run log likelihood
-ll = log_likelihood(data, group = "decade", group_list = c("1870", "1880"))
+ll = data %>%
+  log_likelihood(group = "decade", group_list = c("1870", "1880"))
 ll
 
 # Create visualization
 library(ggplot2)
-ggplot(ll, aes(x = X1870, y = X1880, label = word)) +
-  geom_point() +
-  geom_text(size = 3, nudge_y = 0.5) + 
-  labs(
-    x = "1870",
-    y = "1880",
-    title = "Log Likelihood in Parliament in 1870 and 1880"
-  )
+ll %>%
+  filter(X1870 < 5 & X1880 < 5) %>%
+  ggplot(aes(x = X1870, y = X1880, label = word)) +
+    geom_point() +
+    geom_text(size = 3, nudge_y = 0.2) + 
+    labs(
+      x = "1870",
+      y = "1880",
+      title = "Log Likelihood in Parliament in 1870 and 1880"
+    )
 
 
 

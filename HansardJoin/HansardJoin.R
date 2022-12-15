@@ -1,6 +1,7 @@
 require(devtools)
 install_github("stephbuon/hansardr")
 library(hansardr)
+library(tidyverse)
 
 hansard_join = function(decades = c(1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890, 1900), files = c("hansard", "debate_metadata", "speaker_metadata", "file_metadata")) {
     for (d in decades) {
