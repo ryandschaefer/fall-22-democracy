@@ -30,14 +30,18 @@ ll
 
 # Create visualization
 library(ggplot2)
+library(scales)
 ll %>%
-  filter(X1870 < 5 & X1880 < 5) %>%
   ggplot(aes(x = X1870, y = X1880, label = word)) +
     geom_point() +
-    geom_text(size = 3, nudge_y = 0.2) + 
+    geom_text(size = 3, position = position_jitter()) + 
     labs(
       x = "1870",
       y = "1880",
       title = "Log Likelihood in Parliament in 1870 and 1880"
-    )
+    ) + 
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x))) +
+    scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                  labels = trans_format("log10", math_format(10^.x)))
 
