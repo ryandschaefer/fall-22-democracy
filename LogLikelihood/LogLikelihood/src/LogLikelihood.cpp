@@ -136,8 +136,6 @@ double calcLL(const String& g, const String& w) {
     if (b > 0) {
         LL += 2 * b * log(b / E2);
     }
-    
-    LL = log(LL);
 
     // Return result
     return LL;

@@ -2,24 +2,20 @@
 require(devtools)
 install_github("stephbuon/hansardr")
 library(hansardr)
+data("hansard_1850")
+data("speaker_metadata_1850")
 
-# Create 1870 and 1880 dataset
-rawdata = hansard_join(files = c("hansard", "debate_metadata"))
-rawdata = rawdata %>% mutate(decade = paste(substr(speechdate, 1, 3), "0", sep = ""))
-rawdata
+# Merge datasets
+library(tidyverse)
+h1850 = hansard_1850 %>%
+  inner_join(speaker_metadata_1850)
+head(h1850)
 
 # Format data
 library(tidytext)
-data = rawdata %>%
+data = h1850 %>%
   unnest_tokens(word, text) %>%
-  count(decade, word, sort = TRUE)
-head(data)
-
-# Stopword text
-library(tm)
-stopWords = stopwords("en")
-data = data %>%
-  filter(!(word %in% stopWords))
+  count(speaker, word, sort = TRUE)
 head(data)
 
 # Install log likelihood
@@ -44,7 +40,4 @@ ll %>%
       y = "1880",
       title = "Log Likelihood in Parliament in 1870 and 1880"
     )
-
-
-
 
