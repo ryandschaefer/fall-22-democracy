@@ -4,6 +4,7 @@ library(hansardr)
 
 hansard_join = function(decades = c(1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890, 1900), files = c("hansard", "debate_metadata", "speaker_metadata", "file_metadata")) {
     for (d in decades) {
+        print(d)
         for (f in files) {
             fn = paste(f, toString(d), sep = "_")
             cmd = paste("data('", fn, "')", sep = "")
@@ -12,7 +13,7 @@ hansard_join = function(decades = c(1800, 1810, 1820, 1830, 1840, 1850, 1860, 18
             if (f == files[1]) {
                 year = curr
             } else {
-                year = full_join(year, curr, by = "sentence_id")
+                year = inner_join(year, curr, by = "sentence_id")
             }
         }
         if (d == decades[1]) {
