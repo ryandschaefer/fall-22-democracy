@@ -2,31 +2,33 @@
 require(devtools)
 install_github("stephbuon/hansardr")
 library(hansardr)
-data("hansard_1850")
-data("speaker_metadata_1850")
 
 # Merge datasets
 library(tidyverse)
-h1850 = hansard_1850 %>%
-  inner_join(speaker_metadata_1850)
-head(h1850)
+hansard = hansard_join(files = c("hansard", "debate_metadata"))
+hansard$decade = paste(substr(hansard$speechdate, 1, 3), "0", sep = "")
+head(hansard)
 
 # Format data
 library(tidytext)
-data = h1850 %>%
+data = hansard %>%
   unnest_tokens(word, text) %>%
-  count(speaker, word, sort = TRUE)
+  count(decade, word, sort = TRUE)
+# Remove stopwords
+library(tm)
+stopWords = stopwords("en")
+data = data %>% filter(!(word %in% stopWords))
 head(data)
 
-# Install log likelihood
-setwd("./LogLikelihood")
-install.packages("LogLikelihood_1.0.tar.gz", type = "source", repos = NULL)
-library(LogLikelihood)
+# Import dhmeasures
+setwd("../")
+install.packages("dhmeasures_1.0.tar.gz", type = "source", repos = NULL)
+library(dhmeasures)
 
 # Run log likelihood
 ll = data %>%
   log_likelihood(group = "decade", group_list = c("1870", "1880"))
-ll
+head(ll)
 
 # Create visualization
 library(ggplot2)
@@ -34,7 +36,7 @@ library(scales)
 ll %>%
   ggplot(aes(x = X1870, y = X1880, label = word)) +
     geom_point() +
-    geom_text(size = 3, position = position_jitter()) + 
+    geom_text(hjust=0, vjust=0) + 
     labs(
       x = "1870",
       y = "1880",
