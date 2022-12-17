@@ -12,10 +12,15 @@ head(data)
 # Export demo dataset
 write.csv(data, "./austen.csv", row.names = FALSE)
 
+# Import dhmeasures
+setwd("../")
+install.packages("dhmeasures_1.0.tar.gz", type = "source", repos = NULL)
+library(dhmeasures)
+
 # Run log likelihood
-setwd("./LogLikelihood")
-install.packages("LogLikelihood_1.0.tar.gz", type = "source", repos = NULL)
-library(LogLikelihood)
+# setwd("./LogLikelihood")
+# install.packages("LogLikelihood_1.0.tar.gz", type = "source", repos = NULL)
+# library(LogLikelihood)
 # Default
 ll = log_likelihood(data, group = "book")
 ll
@@ -35,9 +40,9 @@ ll
 setwd("../")
 
 # Run JSD
-setwd("./JSD")
-install.packages("jsdPackage_1.0.tar.gz", type = "source", repos = NULL)
-library(jsdPackage)
+# setwd("./JSD")
+# install.packages("jsdPackage_1.0.tar.gz", type = "source", repos = NULL)
+# library(jsdPackage)
 # Default
 jsd_out = jsd(data, group = "book")
 jsd_out
